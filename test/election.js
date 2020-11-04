@@ -86,4 +86,27 @@ contract("Election", function(accounts) {
       assert.equal(voteCount, 1, "candidate 2 did not receive any votes");
     });
   });
+
+ it("initializes with an address", function() {
+        return Election.deployed().then(function(instance) {
+            return instance.address;
+        }).then(function(address) {
+            assert.notEqual(address, 0x0);
+        });
+    });
+  
+  it("increments votes for correct candidate", function() {
+        return Election.deployed().then(function(instance) {
+            electionInstance = instance;
+            electionInstance.vote(1, { sender: accounts[0] })
+            return electionInstance.candidates(1);	 
+        }).then(function(candidate1) {
+            var voteCount = candidate1[2];
+            assert.equal(voteCount, 1, "candidate 1 received one vote");
+            return electionInstance.candidates(2);
+        }).then(function(candidate2) {
+            var voteCount = candidate2[2];
+            assert.equal(voteCount, 0, "candidate 2 did not receive any votes");
+        });
+    });
 });
